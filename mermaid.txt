@@ -1,0 +1,517 @@
+erDiagram
+    cabors {
+        bigint id
+        varchar nama
+        enum tipe
+        varchar nama_pengprov
+        text keterangan
+        varchar logo
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    cabor_event {
+        bigint id
+        bigint event_id
+        bigint cabor_id
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    cabor_prasarana {
+        bigint id
+        bigint prasarana_id
+        bigint cabor_id
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    cache {
+        varchar key
+        mediumtext value
+        int expiration
+    }
+
+    cache_locks {
+        varchar key
+        varchar owner
+        int expiration
+    }
+
+    ekstrakurikuler_sekolah {
+        bigint id
+        bigint sekolah_id
+        bigint jenis_ekskul_id
+        varchar nama_pembina
+        int jumlah_anggota_putra
+        int jumlah_anggota_putri
+        varchar dokumen_jumlah_anggota
+        varchar jadwal_pertemuan
+        enum status_ekstrakurikuler
+        varchar narahubung
+        varchar telepon
+        bigint created_by
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    events {
+        bigint id
+        bigint kab_kota_id
+        bigint jenis_id
+        varchar nama
+        smallint tahun
+        bigint skala_id
+        enum jenis_event
+        varchar penyelenggara
+        varchar lokasi_kegiatan
+        date tanggal_mulai
+        date tanggal_selesai
+        enum status
+        tinyint disabilitas
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    failed_jobs {
+        bigint id
+        varchar uuid
+        text connection
+        text queue
+        longtext payload
+        longtext exception
+        timestamp failed_at
+    }
+
+    fasilitas_prasarana {
+        bigint id
+        bigint prasarana_id
+        varchar nama
+        int jumlah
+        enum kondisi
+        text keterangan
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    foto_prasarana {
+        bigint id
+        bigint prasarana_id
+        varchar foto
+        varchar deskripsi
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    informasi {
+        bigint id
+        varchar judul
+        longtext isi
+        varchar file_pendukung
+        varchar slug
+        varchar gambar
+        bigint author_id
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    jenis {
+        bigint id
+        varchar nama
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    jenis_ekstrakurikuler {
+        bigint id
+        varchar nama
+        enum kategori
+        bigint cabor_id
+        text keterangan
+        tinyint is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    jobs {
+        bigint id
+        varchar queue
+        longtext payload
+        tinyint attempts
+        int reserved_at
+        int available_at
+        int created_at
+    }
+
+    job_batches {
+        varchar id
+        varchar name
+        int total_jobs
+        int pending_jobs
+        int failed_jobs
+        longtext failed_job_ids
+        mediumtext options
+        int cancelled_at
+        int created_at
+        int finished_at
+    }
+
+    kab_kota {
+        bigint id
+        varchar name
+        varchar code
+        enum type
+        varchar logo
+        decimal latitude
+        decimal longitude
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    log_sistem {
+        bigint id
+        bigint user_id
+        varchar user_name
+        varchar user_role
+        varchar action
+        varchar module
+        text description
+        varchar ip_address
+        text user_agent
+        longtext old_data
+        longtext new_data
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    migrations {
+        int id
+        varchar migration
+        int batch
+    }
+
+    model_has_permissions {
+        bigint permission_id
+        varchar model_type
+        bigint model_id
+    }
+
+    model_has_roles {
+        bigint role_id
+        varchar model_type
+        bigint model_id
+    }
+
+    nomor_tanding {
+        bigint id
+        bigint cabor_id
+        varchar nama
+        enum kategori
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    notifications {
+        char id
+        varchar type
+        varchar notifiable_type
+        bigint notifiable_id
+        text data
+        timestamp read_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    orang {
+        bigint id
+        varchar sportif_id
+        varchar nik
+        varchar nama
+        date tgl_lahir
+        varchar telp
+        text alamat
+        enum gender
+        tinyint disabilitas
+        enum jenis_disabilitas
+        varchar foto
+        decimal tinggi
+        decimal berat
+        enum gol_darah
+        bigint domisili_id
+        tinyint is_active
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    orang_status {
+        bigint id
+        bigint orang_id
+        bigint jenis_id
+        bigint peran_id
+        bigint cabor_id
+        bigint organisasi_id
+        varchar id_sitenor
+        varchar sertifikat_profesi
+        bigint skala_id
+        tinyint is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    organisasi {
+        bigint id
+        bigint jenis_id
+        varchar nama
+        text alamat
+        varchar telp
+        varchar narahubung
+        varchar email
+        varchar sk_pendirian
+        date tgl_sk_pendirian
+        decimal longitude
+        decimal latitude
+        enum status
+        bigint skala_id
+        bigint kab_kota_id
+        varchar logo
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    password_reset_tokens {
+        varchar email
+        varchar token
+        timestamp created_at
+    }
+
+    pengumuman {
+        bigint id
+        varchar judul
+        text isi
+        varchar file_lampiran
+        bigint author_id
+        enum status
+        enum target
+        datetime tampil_mulai
+        datetime tampil_selesai
+        tinyint is_pinned
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    pengurus_organisasi {
+        bigint id
+        bigint organisasi_id
+        bigint ketua_id
+        bigint sekretaris_id
+        bigint bendahara_id
+        int jumlah_anggota
+        varchar sk_kepengurusan
+        date tgl_awal
+        date tgl_akhir
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    peran {
+        bigint id
+        bigint jenis_id
+        varchar nama
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    permissions {
+        bigint id
+        varchar name
+        varchar guard_name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    personal_access_tokens {
+        bigint id
+        varchar tokenable_type
+        bigint tokenable_id
+        text name
+        varchar token
+        text abilities
+        timestamp last_used_at
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    prasarana {
+        bigint id
+        bigint jenis_id
+        bigint lokasi_id
+        varchar nama
+        varchar kategori
+        varchar standar
+        decimal longitude
+        decimal latitude
+        varchar pengelola
+        varchar narahubung
+        varchar telp_narahubung
+        text alamat
+        int kapasitas
+        text keterangan
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    riwayat_event {
+        bigint id
+        bigint event_id
+        bigint cabor_id
+        bigint orang_id
+        bigint pelatih_id
+        bigint wasit_id
+        varchar kategori
+        varchar prestasi
+        enum medali
+        date tanggal
+        text keterangan
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    roles {
+        bigint id
+        varchar name
+        varchar guard_name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    role_has_permissions {
+        bigint permission_id
+        bigint role_id
+    }
+
+    sarana {
+        bigint id
+        bigint kab_kota_id
+        bigint jenis_id
+        varchar kode_inventaris
+        varchar nama_barang
+        text spesifikasi
+        enum kondisi
+        enum status
+        varchar foto_barang
+        bigint cabor_id
+        enum posisi_aset
+        bigint lokasi_barang
+        text keterangan_lokasi
+        int jumlah
+        varchar satuan
+        year tahun_pengadaan
+        varchar sumber_dana
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    sekolah {
+        bigint id
+        bigint kab_kota_id
+        varchar nama_sekolah
+        enum jenis_sekolah
+        enum status_sekolah
+        varchar narahubung
+        varchar telepon
+        bigint created_by
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    sessions {
+        varchar id
+        bigint user_id
+        varchar ip_address
+        text user_agent
+        longtext payload
+        int last_activity
+    }
+
+    skala {
+        bigint id
+        varchar nama
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    tickets {
+        bigint id
+        varchar kode_tiket
+        bigint user_id
+        varchar judul
+        varchar kategori
+        text deskripsi
+        enum status
+        varchar lampiran
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ticket_replies {
+        bigint id
+        bigint ticket_id
+        bigint user_id
+        text pesan
+        varchar lampiran
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users {
+        bigint id
+        varchar name
+        varchar username
+        varchar email
+        timestamp email_verified_at
+        varchar password
+        text google2fa_secret
+        bigint kab_kota_id
+        bigint cabor_id
+        bigint jenis_id
+        tinyint is_active
+        varchar remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    cabors ||--o{ cabor_event : "cabor_id"
+    cabors ||--o{ cabor_prasarana : "cabor_id"
+    users ||--o{ ekstrakurikuler_sekolah : "created_by"
+    jenis ||--o{ events : "jenis_id"
+    prasarana ||--o{ fasilitas_prasarana : "prasarana_id"
+    prasarana ||--o{ foto_prasarana : "prasarana_id"
+    users ||--o{ informasi : "author_id"
+    cabors ||--o{ jenis_ekstrakurikuler : "cabor_id"
+    users ||--o{ log_sistem : "user_id"
+    permissions ||--o{ model_has_permissions : "permission_id"
+    roles ||--o{ model_has_roles : "role_id"
+    cabors ||--o{ nomor_tanding : "cabor_id"
+    kab_kota ||--o{ orang : "domisili_id"
+    cabors ||--o{ orang_status : "cabor_id"
+    jenis ||--o{ organisasi : "jenis_id"
+    users ||--o{ pengumuman : "author_id"
+    orang ||--o{ pengurus_organisasi : "bendahara_id"
+    jenis ||--o{ peran : "jenis_id"
+    jenis ||--o{ prasarana : "jenis_id"
+    cabors ||--o{ riwayat_event : "cabor_id"
+    permissions ||--o{ role_has_permissions : "permission_id"
+    cabors ||--o{ sarana : "cabor_id"
+    users ||--o{ sekolah : "created_by"
+    users ||--o{ tickets : "user_id"
+    tickets ||--o{ ticket_replies : "ticket_id"

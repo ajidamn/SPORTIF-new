@@ -1,0 +1,216 @@
+// part3
+Table cache {
+  key varchar [primary key, not null]
+  value mediumtext [not null]
+  expiration int [not null]
+}
+
+Table cache_locks {
+  key varchar [primary key, not null]
+  owner varchar [not null]
+  expiration int [not null]
+}
+
+Table failed_jobs {
+  id bigint [primary key, not null]
+  uuid varchar [not null]
+  connection text [not null]
+  queue text [not null]
+  payload longtext [not null]
+  exception longtext [not null]
+  failed_at timestamp [not null, default: `current_timestamp()`]
+}
+
+Table informasi {
+  id bigint [primary key, not null]
+  judul varchar [not null]
+  isi longtext [not null]
+  file_pendukung varchar [default: NULL]
+  slug varchar [not null]
+  gambar varchar [default: NULL]
+  author_id bigint [default: NULL]
+  status varchar [not null, default: 'draft', note: '''Enum values: draft,published''']
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table jobs {
+  id bigint [primary key, not null]
+  queue varchar [not null]
+  payload longtext [not null]
+  attempts tinyint [not null]
+  reserved_at int [default: NULL]
+  available_at int [not null]
+  created_at int [not null]
+}
+
+Table job_batches {
+  id varchar [primary key, not null]
+  name varchar [not null]
+  total_jobs int [not null]
+  pending_jobs int [not null]
+  failed_jobs int [not null]
+  failed_job_ids longtext [not null]
+  options mediumtext [default: NULL]
+  cancelled_at int [default: NULL]
+  created_at int [not null]
+  finished_at int [default: NULL]
+}
+
+Table log_sistem {
+  id bigint [primary key, not null]
+  user_id bigint [default: NULL]
+  user_name varchar [default: NULL]
+  user_role varchar [default: NULL]
+  action varchar [not null]
+  module varchar [not null]
+  description text [default: NULL]
+  ip_address varchar [default: NULL]
+  user_agent text [default: NULL]
+  old_data longtext [default: NULL]
+  new_data longtext [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table migrations {
+  id int [primary key, not null]
+  migration varchar [not null]
+  batch int [not null]
+}
+
+Table model_has_permissions {
+  permission_id bigint [primary key, not null]
+  model_type varchar [primary key, not null]
+  model_id bigint [primary key, not null]
+}
+
+Table model_has_roles {
+  role_id bigint [primary key, not null]
+  model_type varchar [primary key, not null]
+  model_id bigint [primary key, not null]
+}
+
+Table notifications {
+  id char [primary key, not null]
+  type varchar [not null]
+  notifiable_type varchar [not null]
+  notifiable_id bigint [not null]
+  data text [not null]
+  read_at timestamp [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table password_reset_tokens {
+  email varchar [primary key, not null]
+  token varchar [not null]
+  created_at timestamp [default: NULL]
+}
+
+Table pengumuman {
+  id bigint [primary key, not null]
+  judul varchar [not null]
+  isi text [not null]
+  file_lampiran varchar [default: NULL]
+  author_id bigint [default: NULL]
+  status varchar [not null, default: 'draft', note: '''Enum values: draft,active,expired''']
+  target varchar [not null, default: 'all', note: '''Enum values: all,public,admin''']
+  tampil_mulai datetime [default: NULL]
+  tampil_selesai datetime [default: NULL]
+  is_pinned tinyint [not null, default: 0]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table permissions {
+  id bigint [primary key, not null]
+  name varchar [not null]
+  guard_name varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table personal_access_tokens {
+  id bigint [primary key, not null]
+  tokenable_type varchar [not null]
+  tokenable_id bigint [not null]
+  name text [not null]
+  token varchar [not null]
+  abilities text [default: NULL]
+  last_used_at timestamp [default: NULL]
+  expires_at timestamp [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table roles {
+  id bigint [primary key, not null]
+  name varchar [not null]
+  guard_name varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table role_has_permissions {
+  permission_id bigint [primary key, not null]
+  role_id bigint [primary key, not null]
+}
+
+Table sessions {
+  id varchar [primary key, not null]
+  user_id bigint [default: NULL]
+  ip_address varchar [default: NULL]
+  user_agent text [default: NULL]
+  payload longtext [not null]
+  last_activity int [not null]
+}
+
+Table tickets {
+  id bigint [primary key, not null]
+  kode_tiket varchar [not null]
+  user_id bigint [not null]
+  judul varchar [not null]
+  kategori varchar [not null]
+  deskripsi text [not null]
+  status varchar [not null, default: 'open', note: '''Enum values: open,in_progress,closed''']
+  lampiran varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table ticket_replies {
+  id bigint [primary key, not null]
+  ticket_id bigint [not null]
+  user_id bigint [not null]
+  pesan text [not null]
+  lampiran varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table users {
+  id bigint [primary key, not null]
+  name varchar [not null]
+  username varchar [not null]
+  email varchar [not null]
+  email_verified_at timestamp [default: NULL]
+  password varchar [not null]
+  google2fa_secret text [default: NULL]
+  kab_kota_id bigint [default: NULL]
+  cabor_id bigint [default: NULL]
+  jenis_id bigint [default: NULL]
+  is_active tinyint [not null, default: 1]
+  remember_token varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Ref: informasi.author_id > users.id
+Ref: log_sistem.user_id > users.id
+Ref: model_has_permissions.permission_id > permissions.id
+Ref: model_has_roles.role_id > roles.id
+Ref: pengumuman.author_id > users.id
+Ref: role_has_permissions.permission_id > permissions.id
+Ref: tickets.user_id > users.id
+Ref: ticket_replies.ticket_id > tickets.id

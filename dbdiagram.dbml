@@ -1,0 +1,519 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table cabors {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  tipe varchar [not null, default: 'olahraga_prestasi', note: '''Jenis cabor: KONI (prestasi) atau KORMI (masyarakat) | Enum values: olahraga_prestasi,olahraga_masyarakat''']
+  nama_pengprov varchar [default: NULL]
+  keterangan text [default: NULL]
+  logo varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table cabor_event {
+  id bigint [primary key, not null]
+  event_id bigint [not null]
+  cabor_id bigint [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table cabor_prasarana {
+  id bigint [primary key, not null]
+  prasarana_id bigint [not null]
+  cabor_id bigint [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table cache {
+  key varchar [primary key, not null]
+  value mediumtext [not null]
+  expiration int [not null]
+}
+
+Table cache_locks {
+  key varchar [primary key, not null]
+  owner varchar [not null]
+  expiration int [not null]
+}
+
+Table ekstrakurikuler_sekolah {
+  id bigint [primary key, not null]
+  sekolah_id bigint [not null]
+  jenis_ekskul_id bigint [not null]
+  nama_pembina varchar [not null]
+  jumlah_anggota_putra int [not null, default: 0]
+  jumlah_anggota_putri int [not null, default: 0]
+  dokumen_jumlah_anggota varchar [default: NULL]
+  jadwal_pertemuan varchar [default: NULL]
+  status_ekstrakurikuler varchar [not null, default: 'Aktif', note: '''Enum values: Aktif,Non-Aktif''']
+  narahubung varchar [default: NULL]
+  telepon varchar [default: NULL]
+  created_by bigint [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table events {
+  id bigint [primary key, not null]
+  kab_kota_id bigint [default: NULL]
+  jenis_id bigint [not null]
+  nama varchar [not null]
+  tahun smallint [default: NULL, note: '''Tahun kegiatan (bisa beda dengan tahun pelaksanaan)''']
+  skala_id bigint [default: NULL]
+  jenis_event varchar [not null, default: 'perlombaan', note: '''Enum values: single event,multi event,pelatihan,perlombaan''']
+  penyelenggara varchar [not null]
+  lokasi_kegiatan varchar [default: NULL]
+  tanggal_mulai date [default: NULL]
+  tanggal_selesai date [default: NULL]
+  status varchar [not null, default: 'aktif', note: '''Enum values: aktif,selesai,dibatalkan''']
+  disabilitas tinyint [not null, default: 0]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table failed_jobs {
+  id bigint [primary key, not null]
+  uuid varchar [not null]
+  connection text [not null]
+  queue text [not null]
+  payload longtext [not null]
+  exception longtext [not null]
+  failed_at timestamp [not null, default: `current_timestamp()`]
+}
+
+Table fasilitas_prasarana {
+  id bigint [primary key, not null]
+  prasarana_id bigint [not null]
+  nama varchar [not null]
+  jumlah int [not null, default: 1]
+  kondisi varchar [not null, default: 'Baik', note: '''Enum values: Baik,Rusak Ringan,Rusak Berat''']
+  keterangan text [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table foto_prasarana {
+  id bigint [primary key, not null]
+  prasarana_id bigint [not null]
+  foto varchar [not null]
+  deskripsi varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table informasi {
+  id bigint [primary key, not null]
+  judul varchar [not null]
+  isi longtext [not null]
+  file_pendukung varchar [default: NULL]
+  slug varchar [not null]
+  gambar varchar [default: NULL]
+  author_id bigint [default: NULL]
+  status varchar [not null, default: 'draft', note: '''Enum values: draft,published''']
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table jenis {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table jenis_ekstrakurikuler {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  kategori varchar [not null, default: 'olahraga', note: '''Enum values: olahraga,kepemimpinan,seni_budaya,akademik_sains,keagamaan''']
+  cabor_id bigint [default: NULL]
+  keterangan text [default: NULL]
+  is_active tinyint [not null, default: 1]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table jobs {
+  id bigint [primary key, not null]
+  queue varchar [not null]
+  payload longtext [not null]
+  attempts tinyint [not null]
+  reserved_at int [default: NULL]
+  available_at int [not null]
+  created_at int [not null]
+}
+
+Table job_batches {
+  id varchar [primary key, not null]
+  name varchar [not null]
+  total_jobs int [not null]
+  pending_jobs int [not null]
+  failed_jobs int [not null]
+  failed_job_ids longtext [not null]
+  options mediumtext [default: NULL]
+  cancelled_at int [default: NULL]
+  created_at int [not null]
+  finished_at int [default: NULL]
+}
+
+Table kab_kota {
+  id bigint [primary key, not null]
+  name varchar [not null]
+  code varchar [not null]
+  type varchar [not null, note: '''Enum values: kabupaten,kota''']
+  logo varchar [default: NULL]
+  latitude decimal [default: NULL]
+  longitude decimal [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table log_sistem {
+  id bigint [primary key, not null]
+  user_id bigint [default: NULL]
+  user_name varchar [default: NULL]
+  user_role varchar [default: NULL]
+  action varchar [not null]
+  module varchar [not null]
+  description text [default: NULL]
+  ip_address varchar [default: NULL]
+  user_agent text [default: NULL]
+  old_data longtext [default: NULL]
+  new_data longtext [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table migrations {
+  id int [primary key, not null]
+  migration varchar [not null]
+  batch int [not null]
+}
+
+Table model_has_permissions {
+  permission_id bigint [primary key, not null]
+  model_type varchar [primary key, not null]
+  model_id bigint [primary key, not null]
+}
+
+Table model_has_roles {
+  role_id bigint [primary key, not null]
+  model_type varchar [primary key, not null]
+  model_id bigint [primary key, not null]
+}
+
+Table nomor_tanding {
+  id bigint [primary key, not null]
+  cabor_id bigint [not null]
+  nama varchar [not null]
+  kategori varchar [not null, default: 'Individu', note: '''Enum values: Tim,Individu''']
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table notifications {
+  id char [primary key, not null]
+  type varchar [not null]
+  notifiable_type varchar [not null]
+  notifiable_id bigint [not null]
+  data text [not null]
+  read_at timestamp [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table orang {
+  id bigint [primary key, not null]
+  sportif_id varchar [default: NULL]
+  nik varchar [default: NULL]
+  nama varchar [not null]
+  tgl_lahir date [default: NULL]
+  telp varchar [default: NULL]
+  alamat text [default: NULL]
+  gender varchar [default: NULL, note: '''Enum values: L,P''']
+  disabilitas tinyint [not null, default: 0]
+  jenis_disabilitas varchar [default: NULL, note: '''Enum values: fisik,intelektual,mental,sensorik_netra,sensorik_rungu,ganda''']
+  foto varchar [default: NULL]
+  tinggi decimal [default: NULL, note: '''cm''']
+  berat decimal [default: NULL, note: '''kg''']
+  gol_darah varchar [default: NULL, note: '''Enum values: A,B,AB,O''']
+  domisili_id bigint [default: NULL]
+  is_active tinyint [not null, default: 1]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table orang_status {
+  id bigint [primary key, not null]
+  orang_id bigint [not null]
+  jenis_id bigint [not null]
+  peran_id bigint [not null]
+  cabor_id bigint [default: NULL]
+  organisasi_id bigint [default: NULL]
+  id_sitenor varchar [default: NULL]
+  sertifikat_profesi varchar [default: NULL]
+  skala_id bigint [default: NULL]
+  is_active tinyint [not null, default: 1]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table organisasi {
+  id bigint [primary key, not null]
+  jenis_id bigint [not null]
+  nama varchar [not null]
+  alamat text [default: NULL]
+  telp varchar [default: NULL]
+  narahubung varchar [default: NULL]
+  email varchar [default: NULL]
+  sk_pendirian varchar [default: NULL]
+  tgl_sk_pendirian date [default: NULL]
+  longitude decimal [default: NULL]
+  latitude decimal [default: NULL]
+  status varchar [not null, default: 'Aktif', note: '''Enum values: Aktif,Non-Aktif''']
+  skala_id bigint [default: NULL]
+  kab_kota_id bigint [default: NULL]
+  logo varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table password_reset_tokens {
+  email varchar [primary key, not null]
+  token varchar [not null]
+  created_at timestamp [default: NULL]
+}
+
+Table pengumuman {
+  id bigint [primary key, not null]
+  judul varchar [not null]
+  isi text [not null]
+  file_lampiran varchar [default: NULL]
+  author_id bigint [default: NULL]
+  status varchar [not null, default: 'draft', note: '''Enum values: draft,active,expired''']
+  target varchar [not null, default: 'all', note: '''Enum values: all,public,admin''']
+  tampil_mulai datetime [default: NULL]
+  tampil_selesai datetime [default: NULL]
+  is_pinned tinyint [not null, default: 0]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table pengurus_organisasi {
+  id bigint [primary key, not null]
+  organisasi_id bigint [not null]
+  ketua_id bigint [default: NULL]
+  sekretaris_id bigint [default: NULL]
+  bendahara_id bigint [default: NULL]
+  jumlah_anggota int [default: NULL]
+  sk_kepengurusan varchar [default: NULL]
+  tgl_awal date [default: NULL]
+  tgl_akhir date [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table peran {
+  id bigint [primary key, not null]
+  jenis_id bigint [not null]
+  nama varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table permissions {
+  id bigint [primary key, not null]
+  name varchar [not null]
+  guard_name varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table personal_access_tokens {
+  id bigint [primary key, not null]
+  tokenable_type varchar [not null]
+  tokenable_id bigint [not null]
+  name text [not null]
+  token varchar [not null]
+  abilities text [default: NULL]
+  last_used_at timestamp [default: NULL]
+  expires_at timestamp [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table prasarana {
+  id bigint [primary key, not null]
+  jenis_id bigint [default: NULL]
+  lokasi_id bigint [default: NULL]
+  nama varchar [not null]
+  kategori varchar [default: NULL]
+  standar varchar [not null, default: 'Belum di Standarisasi']
+  longitude decimal [default: NULL]
+  latitude decimal [default: NULL]
+  pengelola varchar [default: NULL]
+  narahubung varchar [default: NULL]
+  telp_narahubung varchar [default: NULL]
+  alamat text [default: NULL]
+  kapasitas int [default: NULL]
+  keterangan text [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table riwayat_event {
+  id bigint [primary key, not null]
+  event_id bigint [not null]
+  cabor_id bigint [default: NULL]
+  orang_id bigint [not null]
+  pelatih_id bigint [default: NULL]
+  wasit_id bigint [default: NULL]
+  kategori varchar [default: NULL]
+  prestasi varchar [default: NULL]
+  medali varchar [default: NULL, note: '''Enum values: emas,perak,perunggu,-''']
+  tanggal date [default: NULL]
+  keterangan text [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table roles {
+  id bigint [primary key, not null]
+  name varchar [not null]
+  guard_name varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table role_has_permissions {
+  permission_id bigint [primary key, not null]
+  role_id bigint [primary key, not null]
+}
+
+Table sarana {
+  id bigint [primary key, not null]
+  kab_kota_id bigint [default: NULL]
+  jenis_id bigint [default: NULL]
+  kode_inventaris varchar [default: NULL, note: '''Nomor registrasi aset/BMD''']
+  nama_barang varchar [not null]
+  spesifikasi text [default: NULL]
+  kondisi varchar [not null, default: 'baik', note: '''Enum values: baik,rusak_ringan,rusak_berat,butuh_perbaikan,dalam_perbaikan,tidak_layak''']
+  status varchar [not null, default: 'tersedia', note: '''Enum values: tersedia,dipakai,dipinjam,dipelihara,hilang,rusak_total,dijual,dimusnahkan''']
+  foto_barang varchar [default: NULL]
+  cabor_id bigint [default: NULL, note: '''Hanya diisi jika sarana olahraga''']
+  posisi_aset varchar [not null, default: 'internal_dinas', note: '''Flagging posisi barang | Enum values: prasarana,internal_dinas''']
+  lokasi_barang bigint [default: NULL, note: '''Diisi ID Prasarana jika posisi_aset = prasarana''']
+  keterangan_lokasi text [default: NULL, note: '''Wajib diisi nama ruangan/gudang jika posisi_aset = internal_dinas''']
+  jumlah int [not null, default: 1]
+  satuan varchar [not null, default: 'buah']
+  tahun_pengadaan year [default: NULL]
+  sumber_dana varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table sekolah {
+  id bigint [primary key, not null]
+  kab_kota_id bigint [not null]
+  nama_sekolah varchar [not null]
+  jenis_sekolah varchar [not null, note: '''Enum values: SMA,SMK,MA,SLB''']
+  status_sekolah varchar [not null, note: '''Enum values: Negeri,Swasta''']
+  narahubung varchar [default: NULL]
+  telepon varchar [default: NULL]
+  created_by bigint [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table sessions {
+  id varchar [primary key, not null]
+  user_id bigint [default: NULL]
+  ip_address varchar [default: NULL]
+  user_agent text [default: NULL]
+  payload longtext [not null]
+  last_activity int [not null]
+}
+
+Table skala {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table tickets {
+  id bigint [primary key, not null]
+  kode_tiket varchar [not null]
+  user_id bigint [not null]
+  judul varchar [not null]
+  kategori varchar [not null]
+  deskripsi text [not null]
+  status varchar [not null, default: 'open', note: '''Enum values: open,in_progress,closed''']
+  lampiran varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table ticket_replies {
+  id bigint [primary key, not null]
+  ticket_id bigint [not null]
+  user_id bigint [not null]
+  pesan text [not null]
+  lampiran varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table users {
+  id bigint [primary key, not null]
+  name varchar [not null]
+  username varchar [not null]
+  email varchar [not null]
+  email_verified_at timestamp [default: NULL]
+  password varchar [not null]
+  google2fa_secret text [default: NULL]
+  kab_kota_id bigint [default: NULL]
+  cabor_id bigint [default: NULL]
+  jenis_id bigint [default: NULL]
+  is_active tinyint [not null, default: 1]
+  remember_token varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Ref: cabor_event.cabor_id > cabors.id
+Ref: cabor_prasarana.cabor_id > cabors.id
+Ref: ekstrakurikuler_sekolah.created_by > users.id
+Ref: events.jenis_id > jenis.id
+Ref: fasilitas_prasarana.prasarana_id > prasarana.id
+Ref: foto_prasarana.prasarana_id > prasarana.id
+Ref: informasi.author_id > users.id
+Ref: jenis_ekstrakurikuler.cabor_id > cabors.id
+Ref: log_sistem.user_id > users.id
+Ref: model_has_permissions.permission_id > permissions.id
+Ref: model_has_roles.role_id > roles.id
+Ref: nomor_tanding.cabor_id > cabors.id
+Ref: orang.domisili_id > kab_kota.id
+Ref: orang_status.cabor_id > cabors.id
+Ref: organisasi.jenis_id > jenis.id
+Ref: pengumuman.author_id > users.id
+Ref: pengurus_organisasi.bendahara_id > orang.id
+Ref: peran.jenis_id > jenis.id
+Ref: prasarana.jenis_id > jenis.id
+Ref: riwayat_event.cabor_id > cabors.id
+Ref: role_has_permissions.permission_id > permissions.id
+Ref: sarana.cabor_id > cabors.id
+Ref: sekolah.created_by > users.id
+Ref: tickets.user_id > users.id
+Ref: ticket_replies.ticket_id > tickets.id

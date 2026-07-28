@@ -1,0 +1,108 @@
+// part2
+Table cabors {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  tipe varchar [not null, default: 'olahraga_prestasi', note: '''Jenis cabor: KONI (prestasi) atau KORMI (masyarakat) | Enum values: olahraga_prestasi,olahraga_masyarakat''']
+  nama_pengprov varchar [default: NULL]
+  keterangan text [default: NULL]
+  logo varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table cabor_prasarana {
+  id bigint [primary key, not null]
+  prasarana_id bigint [not null]
+  cabor_id bigint [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table fasilitas_prasarana {
+  id bigint [primary key, not null]
+  prasarana_id bigint [not null]
+  nama varchar [not null]
+  jumlah int [not null, default: 1]
+  kondisi varchar [not null, default: 'Baik', note: '''Enum values: Baik,Rusak Ringan,Rusak Berat''']
+  keterangan text [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table foto_prasarana {
+  id bigint [primary key, not null]
+  prasarana_id bigint [not null]
+  foto varchar [not null]
+  deskripsi varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table jenis {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table kab_kota {
+  id bigint [primary key, not null]
+  name varchar [not null]
+  code varchar [not null]
+  type varchar [not null, note: '''Enum values: kabupaten,kota''']
+  logo varchar [default: NULL]
+  latitude decimal [default: NULL]
+  longitude decimal [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table prasarana {
+  id bigint [primary key, not null]
+  jenis_id bigint [default: NULL]
+  lokasi_id bigint [default: NULL]
+  nama varchar [not null]
+  kategori varchar [default: NULL]
+  standar varchar [not null, default: 'Belum di Standarisasi']
+  longitude decimal [default: NULL]
+  latitude decimal [default: NULL]
+  pengelola varchar [default: NULL]
+  narahubung varchar [default: NULL]
+  telp_narahubung varchar [default: NULL]
+  alamat text [default: NULL]
+  kapasitas int [default: NULL]
+  keterangan text [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table sarana {
+  id bigint [primary key, not null]
+  kab_kota_id bigint [default: NULL]
+  jenis_id bigint [default: NULL]
+  kode_inventaris varchar [default: NULL, note: '''Nomor registrasi aset/BMD''']
+  nama_barang varchar [not null]
+  spesifikasi text [default: NULL]
+  kondisi varchar [not null, default: 'baik', note: '''Enum values: baik,rusak_ringan,rusak_berat,butuh_perbaikan,dalam_perbaikan,tidak_layak''']
+  status varchar [not null, default: 'tersedia', note: '''Enum values: tersedia,dipakai,dipinjam,dipelihara,hilang,rusak_total,dijual,dimusnahkan''']
+  foto_barang varchar [default: NULL]
+  cabor_id bigint [default: NULL, note: '''Hanya diisi jika sarana olahraga''']
+  posisi_aset varchar [not null, default: 'internal_dinas', note: '''Flagging posisi barang | Enum values: prasarana,internal_dinas''']
+  lokasi_barang bigint [default: NULL, note: '''Diisi ID Prasarana jika posisi_aset = prasarana''']
+  keterangan_lokasi text [default: NULL, note: '''Wajib diisi nama ruangan/gudang jika posisi_aset = internal_dinas''']
+  jumlah int [not null, default: 1]
+  satuan varchar [not null, default: 'buah']
+  tahun_pengadaan year [default: NULL]
+  sumber_dana varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Ref: cabor_prasarana.cabor_id > cabors.id
+Ref: fasilitas_prasarana.prasarana_id > prasarana.id
+Ref: foto_prasarana.prasarana_id > prasarana.id
+Ref: prasarana.jenis_id > jenis.id
+Ref: sarana.cabor_id > cabors.id

@@ -1,0 +1,224 @@
+// part1
+Table cabors {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  tipe varchar [not null, default: 'olahraga_prestasi', note: '''Jenis cabor: KONI (prestasi) atau KORMI (masyarakat) | Enum values: olahraga_prestasi,olahraga_masyarakat''']
+  nama_pengprov varchar [default: NULL]
+  keterangan text [default: NULL]
+  logo varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table cabor_event {
+  id bigint [primary key, not null]
+  event_id bigint [not null]
+  cabor_id bigint [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table ekstrakurikuler_sekolah {
+  id bigint [primary key, not null]
+  sekolah_id bigint [not null]
+  jenis_ekskul_id bigint [not null]
+  nama_pembina varchar [not null]
+  jumlah_anggota_putra int [not null, default: 0]
+  jumlah_anggota_putri int [not null, default: 0]
+  dokumen_jumlah_anggota varchar [default: NULL]
+  jadwal_pertemuan varchar [default: NULL]
+  status_ekstrakurikuler varchar [not null, default: 'Aktif', note: '''Enum values: Aktif,Non-Aktif''']
+  narahubung varchar [default: NULL]
+  telepon varchar [default: NULL]
+  created_by bigint [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table events {
+  id bigint [primary key, not null]
+  kab_kota_id bigint [default: NULL]
+  jenis_id bigint [not null]
+  nama varchar [not null]
+  tahun smallint [default: NULL, note: '''Tahun kegiatan (bisa beda dengan tahun pelaksanaan)''']
+  skala_id bigint [default: NULL]
+  jenis_event varchar [not null, default: 'perlombaan', note: '''Enum values: single event,multi event,pelatihan,perlombaan''']
+  penyelenggara varchar [not null]
+  lokasi_kegiatan varchar [default: NULL]
+  tanggal_mulai date [default: NULL]
+  tanggal_selesai date [default: NULL]
+  status varchar [not null, default: 'aktif', note: '''Enum values: aktif,selesai,dibatalkan''']
+  disabilitas tinyint [not null, default: 0]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table jenis {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table jenis_ekstrakurikuler {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  kategori varchar [not null, default: 'olahraga', note: '''Enum values: olahraga,kepemimpinan,seni_budaya,akademik_sains,keagamaan''']
+  cabor_id bigint [default: NULL]
+  keterangan text [default: NULL]
+  is_active tinyint [not null, default: 1]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table kab_kota {
+  id bigint [primary key, not null]
+  name varchar [not null]
+  code varchar [not null]
+  type varchar [not null, note: '''Enum values: kabupaten,kota''']
+  logo varchar [default: NULL]
+  latitude decimal [default: NULL]
+  longitude decimal [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table nomor_tanding {
+  id bigint [primary key, not null]
+  cabor_id bigint [not null]
+  nama varchar [not null]
+  kategori varchar [not null, default: 'Individu', note: '''Enum values: Tim,Individu''']
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table orang {
+  id bigint [primary key, not null]
+  sportif_id varchar [default: NULL]
+  nik varchar [default: NULL]
+  nama varchar [not null]
+  tgl_lahir date [default: NULL]
+  telp varchar [default: NULL]
+  alamat text [default: NULL]
+  gender varchar [default: NULL, note: '''Enum values: L,P''']
+  disabilitas tinyint [not null, default: 0]
+  jenis_disabilitas varchar [default: NULL, note: '''Enum values: fisik,intelektual,mental,sensorik_netra,sensorik_rungu,ganda''']
+  foto varchar [default: NULL]
+  tinggi decimal [default: NULL, note: '''cm''']
+  berat decimal [default: NULL, note: '''kg''']
+  gol_darah varchar [default: NULL, note: '''Enum values: A,B,AB,O''']
+  domisili_id bigint [default: NULL]
+  is_active tinyint [not null, default: 1]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table orang_status {
+  id bigint [primary key, not null]
+  orang_id bigint [not null]
+  jenis_id bigint [not null]
+  peran_id bigint [not null]
+  cabor_id bigint [default: NULL]
+  organisasi_id bigint [default: NULL]
+  id_sitenor varchar [default: NULL]
+  sertifikat_profesi varchar [default: NULL]
+  skala_id bigint [default: NULL]
+  is_active tinyint [not null, default: 1]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table organisasi {
+  id bigint [primary key, not null]
+  jenis_id bigint [not null]
+  nama varchar [not null]
+  alamat text [default: NULL]
+  telp varchar [default: NULL]
+  narahubung varchar [default: NULL]
+  email varchar [default: NULL]
+  sk_pendirian varchar [default: NULL]
+  tgl_sk_pendirian date [default: NULL]
+  longitude decimal [default: NULL]
+  latitude decimal [default: NULL]
+  status varchar [not null, default: 'Aktif', note: '''Enum values: Aktif,Non-Aktif''']
+  skala_id bigint [default: NULL]
+  kab_kota_id bigint [default: NULL]
+  logo varchar [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table pengurus_organisasi {
+  id bigint [primary key, not null]
+  organisasi_id bigint [not null]
+  ketua_id bigint [default: NULL]
+  sekretaris_id bigint [default: NULL]
+  bendahara_id bigint [default: NULL]
+  jumlah_anggota int [default: NULL]
+  sk_kepengurusan varchar [default: NULL]
+  tgl_awal date [default: NULL]
+  tgl_akhir date [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table peran {
+  id bigint [primary key, not null]
+  jenis_id bigint [not null]
+  nama varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table riwayat_event {
+  id bigint [primary key, not null]
+  event_id bigint [not null]
+  cabor_id bigint [default: NULL]
+  orang_id bigint [not null]
+  pelatih_id bigint [default: NULL]
+  wasit_id bigint [default: NULL]
+  kategori varchar [default: NULL]
+  prestasi varchar [default: NULL]
+  medali varchar [default: NULL, note: '''Enum values: emas,perak,perunggu,-''']
+  tanggal date [default: NULL]
+  keterangan text [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Table sekolah {
+  id bigint [primary key, not null]
+  kab_kota_id bigint [not null]
+  nama_sekolah varchar [not null]
+  jenis_sekolah varchar [not null, note: '''Enum values: SMA,SMK,MA,SLB''']
+  status_sekolah varchar [not null, note: '''Enum values: Negeri,Swasta''']
+  narahubung varchar [default: NULL]
+  telepon varchar [default: NULL]
+  created_by bigint [default: NULL]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+  deleted_at timestamp [default: NULL]
+}
+
+Table skala {
+  id bigint [primary key, not null]
+  nama varchar [not null]
+  created_at timestamp [default: NULL]
+  updated_at timestamp [default: NULL]
+}
+
+Ref: cabor_event.cabor_id > cabors.id
+Ref: events.jenis_id > jenis.id
+Ref: jenis_ekstrakurikuler.cabor_id > cabors.id
+Ref: nomor_tanding.cabor_id > cabors.id
+Ref: orang.domisili_id > kab_kota.id
+Ref: orang_status.cabor_id > cabors.id
+Ref: organisasi.jenis_id > jenis.id
+Ref: pengurus_organisasi.bendahara_id > orang.id
+Ref: peran.jenis_id > jenis.id
+Ref: riwayat_event.cabor_id > cabors.id
