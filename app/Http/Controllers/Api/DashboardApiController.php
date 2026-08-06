@@ -416,4 +416,63 @@ class DashboardApiController extends Controller
             'riwayat' => $riwayats
         ]);
     }
+
+    // 7. EVENT STATS
+    public function eventStats(Request $request)
+    {
+        extract($this->getScopeParams($request));
+        $tahun = $request->tahun ?? date('Y');
+
+        $qEvent = Event::where('approval_status', 'approved')
+                        ->where('status', '!=', 'dibatalkan');
+        if ($jenis_id) $qEvent->where('jenis_id', $jenis_id);
+        if ($kab_kota_id) {
+            $qEvent->where(function($q) use ($kab_kota_id) {
+                $q->where('kab_kota_id', $kab_kota_id)
+                  ->orWhereHas('skala', fn($sq) => $sq->where('nama', '!=', 'Daerah'));
+            });
+        }
+        if ($tahun) $qEvent->where('tahun', $tahun);
+
+        $eventIds = (clone $qEvent)->pluck('id');
+        
+        $perCabor = DB::table('cabor_event')
+            ->join('cabors', 'cabors.id', '=', 'cabor_event.cabor_id')
+            ->whereIn('cabor_event.event_id', $eventIds)
+            ->select('cabors.nama', DB::raw('COUNT(DISTINCT cabor_event.event_id) as total'))
+            ->groupBy('cabors.id', 'cabors.nama')
+            ->orderByDesc('total')
+            ->limit(15)
+            ->get();
+
+        $perKabKota = (clone $qEvent)
+            ->join('kab_kota', 'kab_kota.id', '=', 'events.kab_kota_id')
+            ->select('kab_kota.name as nama', DB::raw('COUNT(*) as total'))
+            ->groupBy('kab_kota.id', 'kab_kota.name')
+            ->orderByDesc('total')
+            ->limit(15)
+            ->get();
+
+        $perSkala = (clone $qEvent)
+            ->join('skala', 'skala.id', '=', 'events.skala_id')
+            ->select('skala.nama', DB::raw('COUNT(*) as total'))
+            ->groupBy('skala.id', 'skala.nama')
+            ->get();
+
+        $perStatus = (clone $qEvent)
+            ->select('status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status')
+            ->get();
+
+        $perBulan = (clone $qEvent)
+            ->selectRaw("MONTH(tanggal_mulai) as bulan, COUNT(*) as total")
+            ->whereNotNull('tanggal_mulai')
+            ->groupByRaw('MONTH(tanggal_mulai)')
+            ->orderBy('bulan')
+            ->get();
+
+        return response()->json(compact(
+            'perCabor', 'perKabKota', 'perSkala', 'perStatus', 'perBulan'
+        ));
+    }
 }

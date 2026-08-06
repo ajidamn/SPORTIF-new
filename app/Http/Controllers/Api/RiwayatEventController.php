@@ -34,6 +34,7 @@ class RiwayatEventController extends Controller
             'items'               => 'required|array|min:1',
             'items.*.event_id'    => 'required|exists:events,id',
             'items.*.cabor_id'    => 'nullable|exists:cabors,id',
+            'items.*.kab_kota_id' => 'nullable|exists:kab_kota,id',
             'items.*.pelatih_id'  => 'nullable|exists:orang,id',
             'items.*.wasit_id'    => 'nullable|exists:orang,id',
             'items.*.kategori'    => 'nullable|string|max:255',
@@ -75,6 +76,7 @@ class RiwayatEventController extends Controller
         $data = $request->validate([
             'event_id'   => 'sometimes|exists:events,id',
             'cabor_id'   => 'nullable|exists:cabors,id',
+            'kab_kota_id'=> 'nullable|exists:kab_kota,id',
             'pelatih_id' => 'nullable|exists:orang,id',
             'wasit_id'   => 'nullable|exists:orang,id',
             'kategori'   => 'nullable|string|max:255',

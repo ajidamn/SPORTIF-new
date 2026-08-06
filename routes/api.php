@@ -48,6 +48,13 @@ Route::prefix('v1')->middleware(['auth:sanctum,web', 'throttle:60,1'])->group(fu
     Route::get('events/{event}', [Api\EventController::class, 'show']);
     Route::get('events/cabor-by-jenis/{jenisId}', [Api\EventController::class, 'caborByJenis']);
     Route::get('events/{event}/riwayat', [Api\EventController::class, 'riwayat']);
+    Route::get('events/{event}/riwayat/export', [Api\EventController::class, 'exportRiwayat']);
+    Route::get('events/{event}/riwayat/template', [Api\EventController::class, 'downloadTemplateRiwayat']);
+    Route::get('events/{event}/logs', [Api\EventController::class, 'editLogs']);
+    Route::middleware('role:SuperAdmin|Admin Dispora Provinsi')->group(function () {
+        Route::post('events/{event}/approve', [Api\EventController::class, 'approve']);
+        Route::post('events/{event}/reject', [Api\EventController::class, 'reject']);
+    });
     Route::middleware('readonly')->group(function () {
         Route::post('events', [Api\EventController::class, 'store']);
         Route::put('events/{event}', [Api\EventController::class, 'update']);

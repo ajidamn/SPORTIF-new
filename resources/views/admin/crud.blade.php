@@ -372,6 +372,11 @@ const PAGES = {
                 const e=r.tanggal_selesai?new Date(r.tanggal_selesai).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'';
                 return `<span class="badge bg-light text-dark border">${s}${e?' - '+e:''}</span>`;
             }},
+            { title:'Approval', data:'approval_status', defaultContent:'-', render:v=>{
+                if(v==='pending') return `<span class="badge bg-warning text-dark">Pending</span>`;
+                if(v==='rejected') return `<span class="badge bg-danger">Ditolak</span>`;
+                return `<span class="badge bg-success">Disetujui</span>`;
+            }},
             { title:'Cabor', data:'cabors', defaultContent:'-', render:v=>{if(!v||!v.length) return '-'; return v.slice(0,2).map(c=>`<span class="badge bg-success bg-opacity-10 text-success me-1">${c.nama}</span>`).join('')+(v.length>2?`+${v.length-2}`:'');} },
             { title:'Aksi', data:null, orderable:false, render:(d,t,r)=>actionBtns(r.id, r.deleted_at) }
         ],
@@ -383,6 +388,8 @@ const PAGES = {
             {name:'skala_id',label:'Skala',type:'select',cache:'_skalaCache',optionKey:'id',optionLabel:'nama'},
             {name:'status',label:'Status',type:'select',options:[{v:'aktif',l:'Aktif'},{v:'selesai',l:'Selesai'},{v:'dibatalkan',l:'Dibatalkan'}]},
             {name:'disabilitas',label:'Disabilitas',type:'select',options:[{v:'1',l:'Ya'},{v:'0',l:'Tidak'}]},
+            {name:'kapasitas_peserta',label:'Kapasitas Peserta (Kosongkan bila tanpa batas)',type:'number'},
+            {name:'dokumen_pendukung',label:'Dokumen SK/Proposal (Opsional, PDF/JPG)',type:'file'},
         ],
     },
 

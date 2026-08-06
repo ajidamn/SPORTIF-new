@@ -27,11 +27,21 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-people-fill me-2 text-primary"></i>Daftar Peserta & Hasil</h5>
-                    @if(!$isReadOnly)
-                    <button class="btn btn-success btn-sm px-3 rounded-pill shadow-sm" onclick="openPesertaModal()">
-                        <i class="bi bi-plus-lg me-1"></i>Tambah Peserta
-                    </button>
-                    @endif
+                    <div class="d-flex gap-2">
+                        @if(!$isReadOnly)
+                        <button class="btn btn-outline-success btn-sm px-3 rounded-pill shadow-sm" onclick="openImportModal()">
+                            <i class="bi bi-file-earmark-arrow-up me-1"></i>Import
+                        </button>
+                        @endif
+                        <button class="btn btn-outline-secondary btn-sm px-3 rounded-pill shadow-sm" onclick="exportExcel()">
+                            <i class="bi bi-file-earmark-arrow-down me-1"></i>Export
+                        </button>
+                        @if(!$isReadOnly)
+                        <button class="btn btn-primary btn-sm px-3 rounded-pill shadow-sm" onclick="openPesertaModal()">
+                            <i class="bi bi-plus-lg me-1"></i>Tambah Peserta
+                        </button>
+                        @endif
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive p-3">
@@ -157,6 +167,117 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Import Excel -->
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header text-white bg-success bg-gradient">
+                <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-arrow-up me-2"></i>Import Data Peserta</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-3">
+                    <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                    <div>
+                        Pastikan Anda menggunakan format Excel yang benar. <strong>NIK atau Nama</strong> peserta harus sudah terdaftar di sistem.
+                        <br>
+                        <a href="/api/v1/events/{{ $event->id }}/riwayat/template" class="btn btn-sm btn-light mt-2 rounded-pill fw-bold text-primary">
+                            <i class="bi bi-download me-1"></i>Download Template Excel
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tata Cara Pengisian (Accordion) -->
+                <div class="accordion mb-4 shadow-sm" id="accordionInstruksi">
+                    <div class="accordion-item border-0">
+                        <h2 class="accordion-header" id="headingInstruksi">
+                            <button class="accordion-button collapsed fw-bold text-dark bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstruksi">
+                                <i class="bi bi-journal-text text-primary me-2"></i>Tata Cara Pengisian & Referensi Data
+                            </button>
+                        </h2>
+                        <div id="collapseInstruksi" class="accordion-collapse collapse" data-bs-parent="#accordionInstruksi">
+                            <div class="accordion-body bg-white text-secondary" style="font-size: 0.9rem;">
+                                <p>Pastikan Anda mengetik data pada Excel <strong>Sama Persis</strong> dengan referensi di bawah ini (huruf besar/kecil diabaikan, namun spasi harus pas).</p>
+                                <ul>
+                                    <li><strong>NIK / NAMA:</strong> Wajib diisi. NIK (16 digit) lebih diprioritaskan. Peserta harus sudah ada di master data Orang.</li>
+                                    <li>
+                                        <strong>CABOR:</strong> Wajib disi dengan salah satu cabang olahraga di event ini.
+                                        <div class="mt-1 p-2 bg-light border rounded" style="max-height: 100px; overflow-y: auto;">
+                                            @foreach($event->cabors as $c)
+                                                <span class="badge bg-secondary me-1 mb-1">{{ $c->nama }}</span>
+                                            @endforeach
+                                        </div>
+                                    </li>
+                                    <li><strong>KATEGORI_PERTANDINGAN:</strong> Bebas (Opsional). Contoh: <code>-60kg Putra</code>, <code>Ganda Campuran</code>.</li>
+                                    <li>
+                                        <strong>KONTINGEN_KAB_KOTA:</strong> (Opsional). Nama kontingen harus sesuai database: 
+                                        <div class="mt-1 p-2 bg-light border rounded" style="max-height: 100px; overflow-y: auto;" id="refKabKota">
+                                            <em class="text-muted">Memuat data...</em>
+                                        </div>
+                                    </li>
+                                    <li><strong>PRESTASI:</strong> Bebas (Opsional). Contoh: <code>Juara 1</code>, <code>Runner Up</code>.</li>
+                                    <li><strong>MEDALI:</strong> (Opsional). Hanya menerima nilai: <code>emas</code>, <code>perak</code>, <code>perunggu</code>, atau <code>-</code> (strip/kosong).</li>
+                                    <li><strong>TANGGAL_MEDALI:</strong> (Opsional). Format penulisan tanggal Excel biasa (cth: <code>YYYY-MM-DD</code>).</li>
+                                    <li><strong>KETERANGAN:</strong> Bebas (Opsional).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="importForm" onsubmit="handleImport(event)">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">Pilih File Excel (.xlsx, .xls)</label>
+                        <input type="file" class="form-control form-control-lg shadow-sm" id="importFile" accept=".xlsx, .xls, .csv" required>
+                    </div>
+
+                    <div id="importSummary" style="display:none;" class="mb-4">
+                        <h6 class="fw-bold">Ringkasan Hasil Import</h6>
+                        <div class="d-flex gap-3 text-center">
+                            <div class="p-3 bg-light rounded shadow-sm flex-fill">
+                                <h4 class="text-secondary mb-0 fw-bold" id="resTotal">0</h4>
+                                <small>Total Diproses</small>
+                            </div>
+                            <div class="p-3 bg-success bg-opacity-10 text-success rounded shadow-sm flex-fill">
+                                <h4 class="mb-0 fw-bold" id="resBerhasil">0</h4>
+                                <small>Berhasil Disimpan</small>
+                            </div>
+                            <div class="p-3 bg-danger bg-opacity-10 text-danger rounded shadow-sm flex-fill">
+                                <h4 class="mb-0 fw-bold" id="resGagal">0</h4>
+                                <small>Gagal/Diabaikan</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="importErrors" style="display:none;" class="mt-4">
+                        <h6 class="fw-bold text-danger"><i class="bi bi-exclamation-triangle me-1"></i>Detail Data Gagal</h6>
+                        <div class="table-responsive" style="max-height: 250px;">
+                            <table class="table table-sm table-bordered table-striped" style="font-size: 0.85rem;">
+                                <thead class="table-light" style="position: sticky; top: 0;">
+                                    <tr>
+                                        <th>Baris Excel</th>
+                                        <th>Data (NIK / Nama)</th>
+                                        <th>Alasan Gagal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="errorTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4 me-2" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-success rounded-pill px-4 shadow-sm" id="btnProsesImport">
+                            <i class="bi bi-upload me-1"></i>Proses Import
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
@@ -167,15 +288,21 @@ let dt = null;
 let kabKotaCache = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Load Kab/Kota cache for dropdown
+    // Load Kab/Kota cache for dropdown and references
     try {
         const r = await fetch('/api/v1/public/kab-kota?all', {headers:{'Accept':'application/json'}});
         kabKotaCache = await r.json();
         const sel = document.getElementById('pesertaKabKota');
+        const refContainer = document.getElementById('refKabKota');
+        let refHtml = '';
         kabKotaCache.forEach(k => {
             sel.add(new Option(k.name, k.id));
+            refHtml += `<span class="badge bg-secondary me-1 mb-1">${k.name}</span>`;
         });
-    } catch(e) {}
+        if(refContainer) refContainer.innerHTML = refHtml;
+    } catch(e) {
+        if(document.getElementById('refKabKota')) document.getElementById('refKabKota').innerHTML = '<span class="text-danger">Gagal memuat</span>';
+    }
 
     // Init DataTables
     dt = $('#pesertaTable').DataTable({
@@ -312,13 +439,14 @@ async function savePeserta(e) {
         });
         if(res.ok) {
             bootstrap.Modal.getInstance(document.getElementById('pesertaModal')).hide();
-            dt.ajax.reload(null, false);
+            document.getElementById('pesertaSearch').value = '';
+            document.getElementById('pesertaSelected').innerHTML = '';
+            dt.ajax.reload();
         } else {
-            const j = await res.json();
-            alert(j.message || 'Gagal menyimpan');
+            alert(res.message || 'Gagal menyimpan');
         }
     } catch(err) {
-        alert('Kesalahan jaringan');
+        alert('Terjadi kesalahan jaringan');
     }
     btn.disabled = false;
     btn.innerHTML = 'Simpan Data';
@@ -376,6 +504,82 @@ document.addEventListener('click', function(e) {
         document.getElementById('pesertaResults').style.display = 'none';
     }
 });
+
+// ==========================
+// EXPORT & IMPORT EXCEL
+// ==========================
+function exportExcel() {
+    window.location.href = `/api/v1/events/${eventId}/riwayat/export`;
+}
+
+function openImportModal() {
+    document.getElementById('importForm').reset();
+    document.getElementById('importSummary').style.display = 'none';
+    document.getElementById('importErrors').style.display = 'none';
+    document.getElementById('errorTableBody').innerHTML = '';
+    document.getElementById('btnProsesImport').disabled = false;
+    new bootstrap.Modal(document.getElementById('importModal')).show();
+}
+
+async function handleImport(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnProsesImport');
+    const file = document.getElementById('importFile').files[0];
+    if(!file) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Memproses...';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const r = await fetch(`/api/v1/events/${eventId}/riwayat/import`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+
+        const res = await r.json();
+
+        if (r.ok) {
+            document.getElementById('importSummary').style.display = 'block';
+            document.getElementById('resTotal').innerText = res.total || 0;
+            document.getElementById('resBerhasil').innerText = res.berhasil || 0;
+            document.getElementById('resGagal').innerText = res.gagal || 0;
+
+            if (res.gagal > 0 && res.detail_gagal) {
+                const tbody = document.getElementById('errorTableBody');
+                tbody.innerHTML = res.detail_gagal.map(g => `
+                    <tr>
+                        <td class="text-center">${g.baris}</td>
+                        <td>
+                            NIK: ${g.data?.nik || '-'}<br>
+                            Nama: ${g.data?.nama || '-'}
+                            ${g.data?.kontingen ? `<br><small class="text-muted">Kontingen: ${g.data.kontingen}</small>` : ''}
+                        </td>
+                        <td class="text-danger">${g.alasan}</td>
+                    </tr>
+                `).join('');
+                document.getElementById('importErrors').style.display = 'block';
+            } else {
+                document.getElementById('importErrors').style.display = 'none';
+            }
+
+            dt.ajax.reload();
+        } else {
+            alert(res.message || 'Gagal memproses file import.');
+        }
+    } catch (error) {
+        alert('Terjadi kesalahan jaringan.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-upload me-1"></i>Proses Import';
+    }
+}
 </script>
 <style>
 .autocomplete-item:hover { background: #f8f9fa; }

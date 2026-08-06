@@ -13,9 +13,22 @@ class Event extends Model
     protected $table = 'events';
 
     protected $fillable = [
-        'kab_kota_id', 'jenis_id', 'nama', 'tahun', 'skala_id', 'jenis_event',
-        'penyelenggara', 'lokasi_kegiatan',
-        'tanggal_mulai', 'tanggal_selesai', 'status', 'disabilitas'
+        'kab_kota_id',
+        'jenis_id',
+        'nama',
+        'tahun',
+        'skala_id',
+        'jenis_event',
+        'penyelenggara',
+        'lokasi_kegiatan',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'status',
+        'disabilitas',
+        'created_by',
+        'approval_status',
+        'dokumen_pendukung',
+        'kapasitas_peserta',
     ];
 
     protected $casts = [
@@ -44,6 +57,31 @@ class Event extends Model
     public function cabors()
     {
         return $this->belongsToMany(Cabor::class, 'cabor_event', 'event_id', 'cabor_id')->withTimestamps();
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function isEditableBy(User $user): bool
+    {
+        if ($user->hasRole('SuperAdmin')) return true;
+        return $this->created_by === $user->id;
+    }
+
+    public function needsApproval(): bool
+    {
+        if (!$this->created_by) return false;
+        $creator = $this->creator;
+        if (!$creator || !$creator->kab_kota_id) return false;
+        $skala = $this->skala;
+        return $skala && $skala->nama !== 'Daerah';
+    }
+
+    public function editLogs()
+    {
+        return $this->hasMany(EventEditLog::class);
     }
 
     public function riwayat()

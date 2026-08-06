@@ -10,7 +10,7 @@ class RiwayatEvent extends Model
 
     protected $fillable = [
         'event_id', 'cabor_id', 'orang_id',
-        'pelatih_id', 'wasit_id',
+        'pelatih_id', 'wasit_id', 'kab_kota_id',
         'kategori', 'prestasi', 'medali',
         'tanggal', 'keterangan',
     ];
@@ -27,6 +27,11 @@ class RiwayatEvent extends Model
     public function cabor()
     {
         return $this->belongsTo(Cabor::class);
+    }
+
+    public function kab_kota()
+    {
+        return $this->belongsTo(KabKota::class, 'kab_kota_id');
     }
 
     /**

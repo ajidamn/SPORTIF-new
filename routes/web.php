@@ -33,8 +33,8 @@ Route::post('/admin/mfa/verify', [\App\Http\Controllers\Web\MfaController::class
 // ── Admin Panel (Authenticated) ────────────────────────────
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/events/calendar', function () { return view('admin.event-calendar'); })->name('events.calendar');
     Route::get('/events/{id}/peserta', [App\Http\Controllers\Web\EventPesertaController::class, 'index'])->name('events.peserta');
-    
     // Organisasi Pengurus
     Route::get('/organisasi/{id}/pengurus', [App\Http\Controllers\Web\OrganisasiPengurusController::class, 'index'])->name('organisasi.pengurus');
     Route::get('/organisasi/{id}/pengurus/data', [App\Http\Controllers\Web\OrganisasiPengurusController::class, 'data']);

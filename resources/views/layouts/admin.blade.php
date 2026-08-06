@@ -152,7 +152,10 @@
             @endif
             @if($canSeeEvent)
             <a href="{{ route('admin.events') }}" class="nav-item {{ request()->routeIs('admin.events') ? 'active' : '' }}">
-                <i class="bi bi-calendar-event-fill"></i><span>Manajemen Event</span>
+                <i class="bi bi-card-list"></i><span>Manajemen Event</span>
+            </a>
+            <a href="{{ route('admin.events.calendar') }}" class="nav-item {{ request()->routeIs('admin.events.calendar') ? 'active' : '' }}">
+                <i class="bi bi-calendar-event-fill"></i><span>Kalender Event</span>
             </a>
             @endif
             @if($canSeeOrganisasi)

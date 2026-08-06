@@ -29,6 +29,44 @@ trait TenancyScope
 
                 $table = $builder->getModel()->getTable();
 
+                // Khusus untuk tabel events, kita gunakan logika visibility yang lebih kompleks (R1-R8)
+                if ($table === 'events') {
+                    // R5: Filter by jenis_id
+                    if ($user->jenis_id) {
+                        $builder->where('events.jenis_id', $user->jenis_id);
+                    }
+                
+                    // R2, R3, R6, R7: Filter by kab_kota + skala
+                    if ($user->kab_kota_id) {
+                        // User kab/kota: lihat event kab-nya ATAU event skala >= Provinsi
+                        $builder->where(function($q) use ($user) {
+                            $q->where('events.kab_kota_id', $user->kab_kota_id)
+                              ->orWhereHas('skala', function($sq) {
+                                  $sq->where('nama', '!=', 'Daerah');
+                              });
+                        });
+                    }
+                    // User provinsi (tanpa kab_kota_id) -> R6: lihat semua
+                
+                    // R4, R8: Filter by cabor
+                    if ($user->cabor_id) {
+                        $builder->whereHas('cabors', function($q) use ($user) {
+                            $q->where('cabor_id', $user->cabor_id);
+                        });
+                    }
+                    // User tanpa cabor_id = multi-viewer -> tidak filter cabor
+                
+                    // NPCI scope
+                    $isNPCI = $user->hasRole('Ketua NPCI Provinsi')
+                        || $user->hasRole('Ketua NPCI Kab/Kota')
+                        || $user->hasRole('Admin NPCI Provinsi');
+                    if ($isNPCI) {
+                        $builder->where('events.disabilitas', true);
+                    }
+                
+                    return; // Skip filter generik
+                }
+
                 // 1. Filter by kab_kota_id (or lokasi_id) if user has kab_kota_id
                 if ($user->kab_kota_id) {
                     if (Schema::hasColumn($table, 'kab_kota_id')) {
