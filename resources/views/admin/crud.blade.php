@@ -1535,7 +1535,7 @@ async function buildPrasaranaTabs(data) {
         </div>
         <div class="col-md-4">
             <label class="form-label text-muted"><i class="bi bi-diagram-3 me-1"></i>Domain (Jenis) <span class="text-danger">*</span></label>
-            <select class="form-select shadow-sm" name="jenis_id" id="pras_jenis_id" required onchange="updateKategoriOptions()">
+            <select class="form-select shadow-sm" name="jenis_id" id="pras_jenis_id" onchange="updateKategoriOptions()">
                 <option value="">— Pilih Domain —</option>
                 ${_jenisCache.map(j=>`<option value="${j.id}" ${data?.jenis_id==j.id?'selected':''}>${j.nama}</option>`).join('')}
             </select>
