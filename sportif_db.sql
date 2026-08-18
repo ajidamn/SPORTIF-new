@@ -10297,7 +10297,6 @@ ALTER TABLE `notifications`
 --
 ALTER TABLE `operators`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `operators_nik_unique` (`nik`) USING HASH,
   ADD KEY `operators_skala_id_foreign` (`skala_id`),
   ADD KEY `operators_cabor_id_foreign` (`cabor_id`),
   ADD KEY `operators_kabkota_id_foreign` (`kabkota_id`),
