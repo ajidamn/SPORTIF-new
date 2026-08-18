@@ -20,10 +20,6 @@ trait TenancyScope
                 
                 // Skip filtering for SuperAdmin
                 if ($user->hasRole('SuperAdmin')) {
-                    // Cek jika model ini menggunakan SoftDeletes, sertakan data yang terhapus
-                    if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive(get_class($builder->getModel())))) {
-                        $builder->withTrashed();
-                    }
                     return;
                 }
 
