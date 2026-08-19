@@ -12,6 +12,7 @@
         "garygreen/pretty-routes": "^1.0",
         "intervention/image-laravel": "^1.5",
         "laravel/framework": "^12.0",
+        "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",

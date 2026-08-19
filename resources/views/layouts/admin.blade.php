@@ -388,6 +388,21 @@
     <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.11/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Pusher & Echo for Reverb -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
+    <script>
+        window.Pusher = Pusher;
+        window.Echo = new Echo({
+            broadcaster: 'reverb',
+            key: '{{ env("REVERB_APP_KEY") }}',
+            wsHost: '{{ env("REVERB_HOST", "127.0.0.1") }}',
+            wsPort: {{ env("REVERB_PORT", 8080) }},
+            wssPort: {{ env("REVERB_PORT", 8080) }},
+            forceTLS: {{ env("REVERB_SCHEME", "http") === "https" ? "true" : "false" }},
+            enabledTransports: ['ws', 'wss'],
+        });
+    </script>
     <script>
         // CSRF for all AJAX
         $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content } });
@@ -488,7 +503,53 @@
             .catch(err => console.error('Error fetching notifications:', err));
         }
 
-        setInterval(fetchNotifications, 5000);
+        // Fetch on load
+        fetchNotifications();
+
+        // WebSocket listener for notifications
+        const userId = {{ auth()->id() ?? 'null' }};
+        if (userId) {
+            window.Echo.private(`App.Models.User.${userId}`)
+                .listen('NewNotification', (e) => {
+                    // Update badge
+                    if (e.count > 0) {
+                        notifBadge.classList.remove('d-none');
+                        notifBadge.textContent = e.count > 99 ? '99+' : e.count;
+                        if(markAllForm) markAllForm.classList.remove('d-none');
+                    }
+                    
+                    // Hapus pesan kosong jika ada
+                    const emptyState = notifList.querySelector('.text-center.text-muted');
+                    if (emptyState) emptyState.remove();
+
+                    const csrfToken = '{{ csrf_token() }}';
+                    const actionUrl = `{{ url('admin/notifications') }}/${e.notification.id}/read`;
+                    
+                    const html = `
+                    <div class="p-3 border-bottom bg-primary bg-opacity-10" style="transition: background-color 1s">
+                        <form action="${actionUrl}" method="POST" class="m-0">
+                            <input type="hidden" name="_token" value="${csrfToken}">
+                            <button type="submit" class="btn p-0 text-start border-0 bg-transparent w-100 d-flex gap-3">
+                                <div class="text-${e.notification.color || 'primary'} mt-1">
+                                    <i class="bi ${e.notification.icon || 'bi-bell-fill'} fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 small fw-bold text-dark">${e.notification.title || 'Pemberitahuan'}</h6>
+                                    <p class="mb-1 small text-muted" style="line-height: 1.4;">${e.notification.message}</p>
+                                    <small class="text-muted" style="font-size: 0.7rem;">Baru saja</small>
+                                </div>
+                            </button>
+                        </form>
+                    </div>`;
+                    
+                    notifList.insertAdjacentHTML('afterbegin', html);
+                    
+                    // Batasi max 10 notifikasi di tampilan dropdown
+                    if (notifList.children.length > 10) {
+                        notifList.lastElementChild.remove();
+                    }
+                });
+        }
     });
 
     // Change Password AJAX

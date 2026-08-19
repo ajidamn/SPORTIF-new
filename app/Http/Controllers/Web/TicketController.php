@@ -89,12 +89,23 @@ class TicketController extends Controller
             $lampiranPath = $request->file('lampiran')->store('tickets', 'public');
         }
 
-        TicketReply::create([
+        $reply = TicketReply::create([
             'ticket_id' => $ticket->id,
             'user_id' => $user->id,
             'pesan' => $request->pesan,
             'lampiran' => $lampiranPath,
         ]);
+
+        event(new \App\Events\NewTicketReply($ticket->id, [
+            'id' => $reply->id,
+            'pesan' => $reply->pesan,
+            'lampiran' => $reply->lampiran ? asset('storage/' . $reply->lampiran) : null,
+            'created_at' => $reply->created_at->format('d M, H:i'),
+            'user_name' => $user->name ?? 'Unknown',
+            'user_initial' => substr($user->name ?? 'U', 0, 1),
+            'is_superadmin' => $user->hasRole('SuperAdmin'),
+            'is_own' => false
+        ]));
 
         // Auto update status to in_progress if replied by SuperAdmin and it was open
         if ($user->hasRole('SuperAdmin') && $ticket->status === 'open') {
@@ -125,6 +136,8 @@ class TicketController extends Controller
         }
 
         $ticket->update(['status' => 'closed']);
+        
+        event(new \App\Events\TicketStatusChanged($ticket->id, 'closed'));
 
         return redirect()->back()->with('success', 'Tiket berhasil ditutup.');
     }

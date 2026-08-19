@@ -227,8 +227,71 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(err => console.error("Error fetching messages:", err));
     }
 
-    // Polling setiap 5 detik
-    setInterval(fetchNewMessages, 5000);
+    // Fetch initial messages
+    fetchNewMessages();
+
+    // Listen to WebSocket
+    if (window.Echo) {
+        window.Echo.private(`ticket.${ticketId}`)
+            .listen('NewTicketReply', (e) => {
+                // Jangan append pesan dua kali untuk pengirim
+                if (e.replyData.user_id === authUserId) return;
+                
+                // Update lastReplyId agar fetch berikutnya (jika ada) terhindar duplikasi
+                if (e.replyData.id > lastReplyId) {
+                    lastReplyId = e.replyData.id;
+                }
+
+                // Hapus placeholder kosong jika ada
+                const emptyState = document.getElementById('emptyChatState');
+                if (emptyState) emptyState.remove();
+
+                const isOwn = false; // Karena pesan dari orang lain yang dibroadcast ke kita
+                const flexDir = isOwn ? 'flex-row-reverse' : '';
+                const justifyEnd = isOwn ? 'justify-content-end' : '';
+                const avatarColor = e.replyData.is_superadmin ? 'bg-danger' : 'bg-primary';
+                const nameColor = e.replyData.is_superadmin ? 'text-danger' : 'text-dark';
+                const bubbleClass = isOwn ? 'bg-primary text-white' : 'bg-white border text-dark';
+                
+                let lampiranHtml = '';
+                if (e.replyData.lampiran) {
+                    const hrClass = isOwn ? 'border-light opacity-25' : 'border-secondary opacity-25';
+                    const aClass = isOwn ? 'text-light' : 'text-primary';
+                    lampiranHtml = `
+                        <hr class="${hrClass} my-2">
+                        <a href="${e.replyData.lampiran}" target="_blank" class="small text-decoration-none ${aClass}">
+                            <i class="bi bi-paperclip me-1"></i>Buka Lampiran Tambahan
+                        </a>
+                    `;
+                }
+
+                const html = `
+                <div class="d-flex gap-3 mb-4 ${flexDir}">
+                    <div class="avatar-sm rounded-circle d-flex align-items-center justify-content-center text-white ${avatarColor}" style="width:40px;height:40px;min-width:40px">
+                        ${e.replyData.user_initial}
+                    </div>
+                    <div style="max-width: 80%;">
+                        <div class="d-flex align-items-baseline gap-2 mb-1 ${justifyEnd}">
+                            <span class="fw-bold small ${nameColor}">${e.replyData.user_name}</span>
+                            <span class="text-muted" style="font-size: 0.75rem">${e.replyData.created_at}</span>
+                        </div>
+                        <div class="p-3 rounded-4 shadow-sm ${bubbleClass}">
+                            <p class="mb-0" style="white-space: pre-wrap;">${e.replyData.pesan}</p>
+                            ${lampiranHtml}
+                        </div>
+                    </div>
+                </div>
+                `;
+                
+                chatContainer.insertAdjacentHTML('beforeend', html);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            })
+            .listen('TicketStatusChanged', (e) => {
+                if (e.status === 'closed') {
+                    location.reload();
+                }
+            });
+    }
 
     // AJAX Form Submission untuk mencegah reload halaman
     const replyForm = document.getElementById('replyForm');
